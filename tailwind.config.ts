@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -18,12 +19,21 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ['Space Grotesk', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				neon: '#ff0055',
+				dark: {
+					DEFAULT: '#0a0a0a',
+					100: '#141414',
+					200: '#1c1c1c',
+				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
@@ -84,11 +94,32 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-neon': {
+					'0%, 100%': { 
+						boxShadow: '0 0 5px #ff0055, 0 0 10px #ff0055, 0 0 15px #ff0055' 
+					},
+					'50%': { 
+						boxShadow: '0 0 10px #ff0055, 0 0 20px #ff0055, 0 0 30px #ff0055' 
+					}
+				},
+				'text-flicker': {
+					'0%': { opacity: '0.8' },
+					'2%': { opacity: '0.1' },
+					'4%': { opacity: '0.8' },
+					'19%': { opacity: '0.8' },
+					'21%': { opacity: '0.6' },
+					'23%': { opacity: '0.8' },
+					'80%': { opacity: '0.8' },
+					'83%': { opacity: '0.4' },
+					'87%': { opacity: '0.8' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-neon': 'pulse-neon 2s infinite',
+				'text-flicker': 'text-flicker 5s linear infinite'
 			}
 		}
 	},

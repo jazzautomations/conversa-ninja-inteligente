@@ -3,8 +3,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Upload } from "lucide-react";
+import { Upload, User, MessageSquare } from "lucide-react";
 
 interface AnalysisTag {
   text: string;
@@ -25,12 +26,16 @@ interface AnalysisResult {
 }
 
 export function ConversationAnalyzer() {
+  const [personAnalysis, setPersonAnalysis] = useState("");
   const [conversation, setConversation] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisType, setAnalysisType] = useState<"pessoa" | "conversa">("pessoa");
   const [result, setResult] = useState<AnalysisResult | null>(null);
 
   const handleAnalyze = () => {
-    if (conversation.trim().length < 10) {
+    const textToAnalyze = analysisType === "pessoa" ? personAnalysis : conversation;
+    
+    if (textToAnalyze.trim().length < 10) {
       toast("Texto muito curto", {
         description: "Precisamos de mais conteúdo para análise"
       });
@@ -46,7 +51,7 @@ export function ConversationAnalyzer() {
       const mockResult: AnalysisResult = {
         tags: [
           { text: "carente demais", type: "warning", icon: "⚠️" },
-          { text: "tensão sexual no ar", type: "positive", icon: "🔥" },
+          { text: analysisType === "pessoa" ? "personalidade forte" : "tensão sexual no ar", type: "positive", icon: "🔥" },
           { text: "risco de ghost", type: "negative", icon: "👻" },
         ],
         profile: {
@@ -61,7 +66,7 @@ export function ConversationAnalyzer() {
       
       setResult(mockResult);
       toast("Análise concluída", {
-        description: "Detectamos os padrões da sua conversa"
+        description: `Análise de ${analysisType} completada`
       });
     }, 2000);
   };
@@ -77,7 +82,7 @@ export function ConversationAnalyzer() {
       <Card className="border border-white/10 bg-dark-100">
         <CardHeader>
           <CardTitle className="text-xl flex justify-between items-center">
-            <span>Análise de Conversa</span>
+            <span>Análise</span>
             <Button 
               variant="outline" 
               size="icon" 
@@ -89,18 +94,53 @@ export function ConversationAnalyzer() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Textarea
-            placeholder="Cole sua conversa aqui ou descreva a pessoa..."
-            value={conversation}
-            onChange={(e) => setConversation(e.target.value)}
-            className="min-h-[120px] bg-dark-200 border-border/50 resize-none mb-4"
-          />
+          <Tabs 
+            defaultValue="pessoa" 
+            className="w-full mb-4"
+            onValueChange={(value) => setAnalysisType(value as "pessoa" | "conversa")}
+          >
+            <TabsList className="w-full bg-dark-200 border border-white/10">
+              <TabsTrigger 
+                value="pessoa" 
+                className="flex items-center gap-2 w-1/2 data-[state=active]:bg-neon/20"
+              >
+                <User size={16} />
+                <span>Análise de Pessoa</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="conversa" 
+                className="flex items-center gap-2 w-1/2 data-[state=active]:bg-neon/20"
+              >
+                <MessageSquare size={16} />
+                <span>Análise de Conversa</span>
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="pessoa" className="pt-4">
+              <Textarea
+                placeholder="Descreva a pessoa ou cole seu perfil aqui..."
+                value={personAnalysis}
+                onChange={(e) => setPersonAnalysis(e.target.value)}
+                className="min-h-[120px] bg-dark-200 border-border/50 resize-none mb-4"
+              />
+            </TabsContent>
+            
+            <TabsContent value="conversa" className="pt-4">
+              <Textarea
+                placeholder="Cole sua conversa aqui..."
+                value={conversation}
+                onChange={(e) => setConversation(e.target.value)}
+                className="min-h-[120px] bg-dark-200 border-border/50 resize-none mb-4"
+              />
+            </TabsContent>
+          </Tabs>
+
           <Button 
             onClick={handleAnalyze} 
             className="w-full bg-neon hover:bg-neon/90"
             disabled={isAnalyzing}
           >
-            {isAnalyzing ? "Analisando..." : "Analisar"}
+            {isAnalyzing ? "Analisando..." : `Analisar ${analysisType === "pessoa" ? "pessoa" : "conversa"}`}
           </Button>
         </CardContent>
       </Card>
@@ -108,7 +148,9 @@ export function ConversationAnalyzer() {
       {result && (
         <Card className="border border-white/10 bg-dark-100 overflow-hidden">
           <div className="bg-neon/10 border-b border-neon/20 p-3">
-            <h3 className="text-lg font-medium text-white">Resultado da Análise</h3>
+            <h3 className="text-lg font-medium text-white">
+              Resultado da Análise de {analysisType === "pessoa" ? "Pessoa" : "Conversa"}
+            </h3>
           </div>
           <CardContent className="pt-6 space-y-4">
             <div className="flex flex-wrap gap-2">
